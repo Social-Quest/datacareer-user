@@ -154,6 +154,9 @@ const JobDatabase: React.FC = () => {
       if (r?.exp_level) details.push(String(r.exp_level));
       if (r?.location_type) details.push(String(r.location_type));
       if (r?.sec_clearance && r.sec_clearance !== '0') details.push('Clearance');
+      if (r?.pr_citizenship_req && r.pr_citizenship_req !== 'None mentioned' && r.pr_citizenship_req !== '0') {
+        details.push(String(r.pr_citizenship_req));
+      }
       return {
         id: idx + 1,
         apiId: r?.id || '',
@@ -215,12 +218,18 @@ const JobDatabase: React.FC = () => {
         if (jobData?.exp_level) details.push(String(jobData.exp_level));
         if (jobData?.location_type) details.push(String(jobData.location_type));
         if (jobData?.sec_clearance && jobData.sec_clearance !== '0') details.push('Clearance');
+        if (jobData?.pr_citizenship_req && jobData.pr_citizenship_req !== 'None mentioned' && jobData.pr_citizenship_req !== '0') {
+          details.push(String(jobData.pr_citizenship_req));
+        }
         // Also check top-level r for these fields
         if (!details.length) {
           if (r?.role_cat) details.push(String(r.role_cat));
           if (r?.exp_level) details.push(String(r.exp_level));
           if (r?.location_type) details.push(String(r.location_type));
           if (r?.sec_clearance && r.sec_clearance !== '0') details.push('Clearance');
+          if (r?.pr_citizenship_req && r.pr_citizenship_req !== 'None mentioned' && r.pr_citizenship_req !== '0') {
+            details.push(String(r.pr_citizenship_req));
+          }
         }
       }
 
@@ -256,7 +265,7 @@ const JobDatabase: React.FC = () => {
   const mapLocationType = (val?: string) => {
     if (!val) return undefined;
     if (val === 'major-cities') return 'Major city';
-    if (val === 'regional') return 'Regional / Remote';
+    if (val === 'regional') return 'Regional/remote';
     return val;
   };
 
@@ -304,7 +313,11 @@ const JobDatabase: React.FC = () => {
     if (roleJoined) qp.role_cat = roleJoined;
     const statesJoined = joinOrUndefined(filters.locationState, c => mapStateCodeToName(c) as string);
     if (statesJoined) qp.state = statesJoined;
-    const expJoined = joinOrUndefined(filters.experienceLevel, v => toTitleCase(v.replace('-', ' ')) as string);
+    const expJoined = joinOrUndefined(filters.experienceLevel, v => {
+      if (v === 'entry-level') return 'Entry-level';
+      if (v === 'very-senior') return 'Very Senior';
+      return toTitleCase(v.replace('-', ' ')) as string;
+    });
     if (expJoined) qp.exp_level = expJoined;
     const locTypeJoined = joinOrUndefined(filters.locationType, v => mapLocationType(v) as string);
     if (locTypeJoined) qp.location_type = locTypeJoined;
@@ -738,8 +751,8 @@ const JobDatabase: React.FC = () => {
                     onClick={() => setActiveTab('database')}
                     variant={activeTab === 'database' ? 'default' : 'outline'}
                     className={`px-3 sm:px-4 lg:px-5 py-2 rounded-lg text-xs sm:text-sm hover:bg-none! whitespace-nowrap ${activeTab === 'database'
-                        ? 'bg-datacareer-darkBlue text-white'
-                        : 'bg-transparent text-datacareer-darkBlue border-white'
+                      ? 'bg-datacareer-darkBlue text-white'
+                      : 'bg-transparent text-datacareer-darkBlue border-white'
                       }`}
                   >
                     <span className="sm:inline">Job Database</span>
@@ -748,8 +761,8 @@ const JobDatabase: React.FC = () => {
                     onClick={() => setActiveTab('tracker')}
                     variant={activeTab === 'tracker' ? 'default' : 'outline'}
                     className={`px-3 sm:px-4 lg:px-5 py-2 rounded-lg text-xs sm:text-sm hover:bg-none! whitespace-nowrap ${activeTab === 'tracker'
-                        ? 'bg-datacareer-darkBlue text-white'
-                        : 'bg-transparent text-datacareer-darkBlue border-white'
+                      ? 'bg-datacareer-darkBlue text-white'
+                      : 'bg-transparent text-datacareer-darkBlue border-white'
                       }`}
                   >
                     <span className="sm:inline">Saved Jobs</span>
@@ -968,8 +981,8 @@ const JobDatabase: React.FC = () => {
                       <button
                         key={pageNum}
                         className={`min-w-[28px] h-7 px-2 text-sm rounded border ${pageNum === currentPage
-                            ? 'bg-datacareer-darkBlue text-white border-datacareer-darkBlue'
-                            : 'hover:bg-gray-50'
+                          ? 'bg-datacareer-darkBlue text-white border-datacareer-darkBlue'
+                          : 'hover:bg-gray-50'
                           }`}
                         disabled={isLoading}
                         onClick={() => (activeTab === 'tracker' ? fetchSavedPage(pageNum) : fetchPage(currentDataset, pageNum))}

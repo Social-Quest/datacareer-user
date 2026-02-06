@@ -171,15 +171,11 @@ const JobFilterBar: React.FC<JobFilterBarProps> = ({
     return false;
   }, [pendingFilters, filters]);
 
-  // =====================
-  // Download helpers
-  // =====================
-  // API base is provided by apiInstance
 
   const mapLocationType = (val?: string) => {
     if (!val) return undefined;
     if (val === 'major-cities') return 'Major city';
-    if (val === 'regional') return 'Regional / Remote';
+    if (val === 'regional') return 'Regional/remote';
     return val;
   };
 
@@ -253,7 +249,11 @@ const JobFilterBar: React.FC<JobFilterBarProps> = ({
     const statesJoined = joinOrUndefined(currentFilters.locationState, c => mapStateCodeToName(c) as string);
     if (statesJoined) qp.state = statesJoined;
 
-    const expJoined = joinOrUndefined(currentFilters.experienceLevel, v => toTitleCase(v.replace('-', ' ')) as string);
+    const expJoined = joinOrUndefined(currentFilters.experienceLevel, v => {
+      if (v === 'entry-level') return 'Entry-level';
+      if (v === 'very-senior') return 'Very Senior';
+      return toTitleCase(v.replace('-', ' ')) as string;
+    });
     if (expJoined) qp.exp_level = expJoined;
 
     const locTypeJoined = joinOrUndefined(currentFilters.locationType, v => mapLocationType(v) as string);
@@ -294,39 +294,6 @@ const JobFilterBar: React.FC<JobFilterBarProps> = ({
     }
     return page + 1;
   };
-
-  // const jsonToCsv = (rows: any[]) => {
-  //   if (!rows || rows.length === 0) return '';
-  //   const headers = [
-  //     'posted_date', 'job_title', 'company_name', 'city', 'state', 'location', 'top_tech_skills', 'function', 'industry', 'role_cat', 'exp_level', 'sec_clearance', 'pr_citizenship_req', 'url', 'location_type'
-  //   ];
-  //   const escape = (val: any) => {
-  //     if (val === undefined || val === null) return '';
-  //     const str = String(val).replace(/\r?\n|\r/g, ' ');
-  //     if (str.includes(',') || str.includes('"')) {
-  //       return '"' + str.replace(/"/g, '""') + '"';
-  //     }
-  //     return str;
-  //   };
-  //   const lines = [headers.map(formatHeaderLabel).join(',')];
-  //   for (const r of rows) {
-  //     const posted = r.posted_date && typeof r.posted_date === 'object' ? r.posted_date.value : r.posted_date;
-  //     const locationDisplay = r.location || [r.city, r.state].filter(Boolean).join(', ');
-  //     const line = headers.map(fieldName => {
-  //       switch (fieldName) {
-  //         case 'posted_date':
-  //           return escape(posted);
-  //         case 'location':
-  //           return escape(locationDisplay);
-  //         default:
-  //           return escape(r[fieldName]);
-  //       }
-  //     }).join(',');
-  //     lines.push(line);
-  //   }
-  //   return lines.join('\n');
-  // };
-
 
   const jsonToCsv = (rows: any[]) => {
     if (!rows || rows.length === 0) return '';
@@ -498,30 +465,6 @@ const JobFilterBar: React.FC<JobFilterBarProps> = ({
       {/* Filter Row 1 - Dropdowns */}
       <div className="p-3 sm:p-4 border-b">
         <div className="">
-          {/* <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-              Posted Date
-            </label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {pendingFilters.postedDate ? format(pendingFilters.postedDate, "dd-MM-yyyy") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={pendingFilters.postedDate}
-                  onSelect={(date) => handlePendingFilterChange('postedDate', date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div> */}
           {activeTab === 'tracker' ? (
             <div>
               <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
@@ -803,7 +746,9 @@ const JobFilterBar: React.FC<JobFilterBarProps> = ({
                         {pendingFilters.experienceLevel.length === 0
                           ? "All experience levels"
                           : pendingFilters.experienceLevel.length === 1
-                            ? pendingFilters.experienceLevel[0].replace(/\b\w/g, l => l.toUpperCase()).replace('-', ' ')
+                            ? pendingFilters.experienceLevel[0] === 'entry-level'
+                              ? 'Entry-level'
+                              : pendingFilters.experienceLevel[0].replace(/\b\w/g, l => l.toUpperCase()).replace('-', ' ')
                             : `${pendingFilters.experienceLevel.length} levels selected`
                         }
                       </span>
@@ -814,12 +759,12 @@ const JobFilterBar: React.FC<JobFilterBarProps> = ({
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <Checkbox
-                          id="entry"
-                          checked={pendingFilters.experienceLevel.includes('entry')}
-                          onCheckedChange={(checked) => handleMultiSelectChange('experienceLevel', 'entry', checked as boolean)}
+                          id="entry-level"
+                          checked={pendingFilters.experienceLevel.includes('entry-level')}
+                          onCheckedChange={(checked) => handleMultiSelectChange('experienceLevel', 'entry-level', checked as boolean)}
                         />
-                        <label htmlFor="entry" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          Entry Level
+                        <label htmlFor="entry-level" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          Entry-level
                         </label>
                       </div>
                       <div className="flex items-center space-x-2">

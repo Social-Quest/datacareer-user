@@ -95,7 +95,7 @@ const JobTable: React.FC<JobTableProps> = ({ jobs, savedJobs, onSaveJob, activeT
 
   const saveJobToServer = async (job: Job, isCurrentlySaved: boolean = false) => {
     console.log("job => ", job);
-    
+
     if (!job) return null;
     try {
       // Use stored fields from Job object if available, otherwise try to parse from location string
@@ -309,8 +309,9 @@ const JobTable: React.FC<JobTableProps> = ({ jobs, savedJobs, onSaveJob, activeT
     }
     if (lowerDetail.includes('remote') || lowerDetail.includes('major city')) {
       return 'bg-[#e6cff2] text-[#240d30] border-[#e6cff2]';
-
-      // return 'bg-purple-100 text-purple-800 border-purple-200';
+    }
+    if (lowerDetail.includes('citizenship') || lowerDetail.includes('residency') || lowerDetail.includes('visa')) {
+      return 'bg-rose-100 text-rose-800 border-rose-200';
     }
     if (lowerDetail.includes('full-time')) {
       return 'bg-gray-100 text-gray-800 border-gray-200';
@@ -365,8 +366,8 @@ const JobTable: React.FC<JobTableProps> = ({ jobs, savedJobs, onSaveJob, activeT
                 ? (confirmModal.isLoading
                   ? 'Saving...'
                   : confirmModal.saveResponse
-                  ? (confirmModal.saveResponse.isSaved ? 'Job Saved!' : 'Job Removed')
-                  : 'Save this job?')
+                    ? (confirmModal.saveResponse.isSaved ? 'Job Saved!' : 'Job Removed')
+                    : 'Save this job?')
                 : 'Confirm status change'}
             </h3>
             {confirmModal.mode === 'status' && (
