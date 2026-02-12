@@ -311,7 +311,7 @@ const JobTable: React.FC<JobTableProps> = ({ jobs, savedJobs, onSaveJob, activeT
       return 'bg-[#e6cff2] text-[#240d30] border-[#e6cff2]';
     }
     if (lowerDetail.includes('citizenship') || lowerDetail.includes('residency') || lowerDetail.includes('visa')) {
-      return 'bg-rose-100 text-rose-800 border-rose-200';
+      return "bg-blue-100 text-blue-800 border border-blue-200";
     }
     if (lowerDetail.includes('full-time')) {
       return 'bg-gray-100 text-gray-800 border-gray-200';
