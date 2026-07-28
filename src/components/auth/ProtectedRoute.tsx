@@ -40,8 +40,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const latestUserFromStorage = readUserFromStorage();
     const latestEffectiveUser = latestUserFromStorage || user;
 
-    // If localStorage has paymentDone=true but Redux doesn't, sync Redux now
-    if (latestUserFromStorage?.paymentDone === true && user?.paymentDone !== true) {
+    // If localStorage has active subscription data but Redux doesn't reflect it, sync Redux now
+    const latestStoredSubStatus = (latestUserFromStorage?.subscriptionStatus || '').toString().toLowerCase();
+    const latestStoredIsActive =
+      latestUserFromStorage?.paymentDone === true ||
+      latestStoredSubStatus === 'active' ||
+      latestStoredSubStatus === 'trialing' ||
+      latestStoredSubStatus === 'trial';
+
+    if (latestStoredIsActive && user?.paymentDone !== true && trialStatus !== 'paid') {
       dispatch(updateTrialStatus({ trialStatus: 'paid', trialDaysRemaining: null, user: latestUserFromStorage }));
     }
 
