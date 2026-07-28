@@ -15,7 +15,6 @@ dist-ssr/
 *.local
 
 # Editor directories and files
-.vscode/
 .idea/
 *.suo
 *.ntvs*
@@ -25,17 +24,13 @@ dist-ssr/
 
 <<<<<<< HEAD
 
-.env
 /env
-/.env
 =======
 # Mac / Linux system files
 .DS_Store
 Thumbs.db
 
 # Env files
-.env
-.env.local
 .env.*.local
 
 # Optional: lock files if you don’t want to commit them
@@ -43,3 +38,4 @@ Thumbs.db
 # yarn.lock
 # pnpm-lock.yaml
 >>>>>>> origin/jobdatabase-dev
+config.bat
