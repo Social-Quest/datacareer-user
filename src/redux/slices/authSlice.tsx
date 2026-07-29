@@ -51,6 +51,21 @@ const getInitialTrialDaysRemaining = (): number | null => {
 };
 
 const getInitialStoredTrialStatus = (): AuthState['trialStatus'] | undefined => {
+  try {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const storedUser = JSON.parse(userStr);
+      const subStatus = (storedUser?.subscriptionStatus || '').toString().toLowerCase();
+      const isActiveUser =
+        storedUser?.paymentDone === true ||
+        subStatus === 'active' ||
+        subStatus === 'trialing' ||
+        subStatus === 'trial';
+      if (isActiveUser) return 'paid';
+    }
+  } catch {
+  }
+
   const raw = localStorage.getItem('trialStatus');
   if (!raw) return undefined;
   const val = raw.toString();
