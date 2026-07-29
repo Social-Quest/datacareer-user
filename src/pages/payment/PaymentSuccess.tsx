@@ -36,15 +36,25 @@ const PaymentSuccess: React.FC = () => {
             // Paid confirmed -> update Redux + localStorage
             if (updatedUser) {
               try {
+                // Ensure the user object also reflects payment
+                updatedUser.paymentDone = true;
+                updatedUser.subscriptionStatus = updatedUser.subscriptionStatus || 'active';
+                updatedUser.planType = updatedUser.planType || 'premium';
                 localStorage.setItem('user', JSON.stringify(updatedUser));
               } catch {
                 // ignore
               }
             }
 
+            try {
+              localStorage.setItem('trialStatus', 'paid');
+            } catch {
+              // ignore
+            }
+
             dispatch(updateTrialStatus({
-              trialStatus: updatedTrialStatus || 'paid',
-              trialDaysRemaining: updatedDays ?? null,
+              trialStatus: 'paid',
+              trialDaysRemaining: null,
               user: updatedUser || undefined,
             }));
 
@@ -72,13 +82,14 @@ const PaymentSuccess: React.FC = () => {
           user.subscriptionStatus = 'active';
           user.planType = 'premium';
           localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('trialStatus', 'paid');
           dispatch(updateTrialStatus({ trialStatus: 'paid', trialDaysRemaining: null, user }));
         } else {
-          // If no user in storage, still mark plan as paid in Redux so UI unlocks this session
+          localStorage.setItem('trialStatus', 'paid');
           dispatch(updateTrialStatus({ trialStatus: 'paid', trialDaysRemaining: null }));
         }
       } catch {
-        // ignore
+        localStorage.setItem('trialStatus', 'paid');
         dispatch(updateTrialStatus({ trialStatus: 'paid', trialDaysRemaining: null }));
       }
 
